@@ -6,4 +6,5 @@ RTG.exe <Site_to_start>
   
 Example:  
 .\RTG.exe https://www.techmeme.com/  
-.\RTG.exe https://news.ycombinator.com/
+.\RTG.exe https://news.ycombinator.com/  
+.\RTG.exe https://moz.com/top500  
