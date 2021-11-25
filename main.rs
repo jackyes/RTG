@@ -48,12 +48,12 @@ fn visit_page(uri: &str, mut dept: i32){
             .collect::<HashSet<String>>();
         
             for lk in &found_urls {
-                if lk.contains("https") && dept < CONFIG_DEPT {
+                if lk.contains("https") && dept <= CONFIG_DEPT {
                     dept += 1;
                     visit_page(lk,dept);
                     thread::sleep(Duration::from_millis(400));           
-                } else if dept < 6 {
-                    println!("Depth 6. Stop.");
+                } else if dept >= CONFIG_DEPT {
+                    println!("Depth {}. Stop.", CONFIG_DEPT);
                     break;
                 }
             }
