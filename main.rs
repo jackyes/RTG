@@ -4,7 +4,7 @@ use select::predicate::Name;
 use std::collections::HashSet;
 use std::{thread, time::Duration};
 
-static CONFIG_DEPT: i32 = 6;
+static CONFIG_DEPTH: i32 = 6;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -32,13 +32,14 @@ fn main() {
     }
 }
 
-fn visit_page(uri: &str, mut dept: i32){
+fn visit_page(uri: &str, mut depth: i32){
     let client = reqwest::blocking::Client::new();
     let origin_url = uri;
     let res = client.get(origin_url).send();
     match res {
         Ok(res) => {
-            println!("Status for {}: {}", origin_url, res.status());
+
+            println!("Status for {}: {}, depth: {}", origin_url, res.status(), depth);
             
             let textwp = res.text().expect("response text");
             let found_urls = Document::from(textwp.as_str())
@@ -46,14 +47,16 @@ fn visit_page(uri: &str, mut dept: i32){
             .filter_map(|n| n.attr("href"))
             .map(str::to_string)
             .collect::<HashSet<String>>();
+            
+            println!("Fond {} links.", &found_urls.len());
         
             for lk in &found_urls {
-                if lk.contains("https") && dept <= CONFIG_DEPT {
-                    dept += 1;
-                    visit_page(lk,dept);
+                if lk.contains("https") && depth <= CONFIG_DEPTH - 1 {
+                    depth += 1;
+                    visit_page(lk,depth);
                     thread::sleep(Duration::from_millis(400));           
-                } else if dept >= CONFIG_DEPT {
-                    println!("Depth {}. Stop.", CONFIG_DEPT);
+                } else if depth >= CONFIG_DEPTH - 1 {
+                    println!("depth {}. Stop.", CONFIG_DEPTH);
                     break;
                 }
             }
